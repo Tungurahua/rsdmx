@@ -1,60 +1,27 @@
-library(XML)
-library(RCurl)
-library(rsdmx)
+library(XML);library(RCurl)
 
-## creating arguments for testing purpose
-
-# url to REST resource
+# REST resource for DSD of nama_gdp_c
+# downloading, parsing XML an setting root
 file <- "http://ec.europa.eu/eurostat/SDMX/diss-web/rest/datastructure/ESTAT/DSD_nama_gdp_c"
+content <- getURL(file, httpheader = list('User-Agent' = 'R-Agent'))
+root <- xmlRoot(xmlInternalTreeParse(content, useInternalNodes = TRUE))
 
-# downloading and parsing XML
-rsdmxAgent <- paste("rsdmx/",as.character(packageVersion("rsdmx")),sep="")
-content <- getURL(
-  file,
-  httpheader = list('User-Agent' = rsdmxAgent)
-)
-
-## if "Internal" is used, you need to specify the Root
-doc <- xmlInternalTreeParse(content, useInternalNodes = TRUE)
-root <- xmlRoot(doc)
-
-
-
-# xmlApply, xmlSApply
-
-
-## get Nodeset of Codelists
+# get Nodeset of Codelists and its length
 nodes <- getNodeSet(root,"//str:Codelist")
-sapply(nodes, xmlGetAttr,"id")
-sapply(nodes, xmlChildren)
-
-
-xmlGetAttr(xmlChildren(nodes[[1]]),"id")
-
-## extract only the Codelist Names
-codelist <- xpathApply(root,"//str:Codelist",xmlGetAttr,"id")
-
-
-# First Node Codelist
-codelist1 <- xpathApply(root,path = ("//str:Codelist[1]/str:Code"),xmlGetAttr,"id")
-names1 <- xpathApply(root,path = ("//str:Codelist[1]/str:Code/com:Name"),xmlValue)
-
-# All Nodes Codelist
 nn <- length(nodes)
 
-# Get List of all Codes
+# Create nested List of all Codes and Names
 codelistAll <- lapply(seq(nn),function(i){
   xpathSApply(root,paste0("//str:Codelist[",i,"]/str:Code"),xmlGetAttr, "id")
 })
 
-# Get List of all Names
 namelistAll <- lapply(seq(nn),function(i){
   xpathSApply(root,paste0("//str:Codelist[",i,"]/str:Code/com:Name"),xmlValue)
 })
 
+# Create a list of dataframes from the nested lists
 alldfList <-lapply(seq(nn),function(i) data.frame(codes=codelistAll[[i]],names=namelistAll[[i]]))
 
-
+# Name the list items like the nodes
 names(alldfList)  <- sapply(nodes, xmlGetAttr,"id")
 
- 
