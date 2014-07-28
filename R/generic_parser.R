@@ -39,8 +39,7 @@ df2 <- do.call(rbind, lapply(getNodeSet(root,"//generic:Obs"), function(x) {
     dimension=xmlGetNodeAttr(x, "./generic:ObsDimension","value",NA,ns),
     value=xmlGetNodeAttr(x, "./generic:ObsValue","value",NA,ns),
     status=xmlGetNodeAttr(x, "./generic:Attributes/generic:Value[@id='OBS_STATUS']","value",NA,ns),
-    flag=xmlGetNodeAttr(x, "./generic:Attributes/generic:Value[@id='OBS_FLAG']","value",NA,ns)
-  )
+    flag=xmlGetNodeAttr(x, "./generic:Attributes/generic:Value[@id='OBS_FLAG']","value",NA,ns),stringsAsFactors=F)
 }))
 
 
@@ -49,8 +48,4 @@ df <- cbind(df1,df2)
 return(df)
 }
 
-#read_eurostat(flowRef = "cdh_e_fos", 
-#key = "..PC.FOS1.BE",
-#start = 2005,
-#end =   2011)
 
