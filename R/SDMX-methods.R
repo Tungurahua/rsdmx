@@ -25,6 +25,9 @@ if (!isGeneric("getSDMXHeader"))
 if (!isGeneric("getSDMXType"))
 	setGeneric("getSDMXType", function(obj) standardGeneric("getSDMXType"));
 
+if (!isGeneric("getNamespaces"))
+  setGeneric("getNamespaces", function(obj) standardGeneric("getNamespaces"));
+
 #methods
 setMethod(f = "as.XML", signature = "SDMX", function(obj){
 									return(obj@xmlObj);
@@ -43,3 +46,30 @@ setMethod(f = "getSDMXType", signature = "SDMX", function(obj){
 							}
 )
 
+namespaces.SDMX <- function(xmlObj){
+  nsDefs.df <-as.data.frame(
+    do.call("rbind",
+            lapply(xmlNamespaceDefinitions(xmlObj, simplify = F),
+                   function(x){c(x$id, x$uri)})),
+    stringAsFactors = FALSE
+  )
+  colnames(nsDefs.df) <- c("id","uri")
+  nsDefs.df$id <- as.character(nsDefs.df$id)
+  nsDefs.df$uri <- as.character(nsDefs.df$uri)
+  return(nsDefs.df)
+}
+
+setMethod(f = "getNamespaces", signature = "SDMX", function(obj){
+            return(namespaces.SDMX(obj@xmlObj));
+          }
+)
+
+#others non-S4 methods
+#====================
+
+#findNamespace
+findNamespace <- function(namespaces, messageType){
+  regexp <- paste(messageType, "$", sep = "")
+  ns <- c(ns = namespaces$uri[grep(regexp, namespaces$uri)])
+  return(ns)
+}

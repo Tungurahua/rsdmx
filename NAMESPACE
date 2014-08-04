@@ -8,17 +8,26 @@ exportClasses(
 	SDMXSchema,
 	SDMXHeader,
 	SDMXType,
-	SDMXDataSet
+  SDMXStructureType,
+	SDMXGenericData,
+  SDMXCompactData,
+  SDMXMessageGroup
 )
 
 export(
 	SDMX,
 	SDMXSchema,
 	SDMXHeader,
-	SDMXType,	
-	SDMXDataSet,	
+	SDMXType,
+  SDMXStructureType,
+	SDMXGenericData,
+  SDMXCompactData,
+  SDMXMessageGroup,
 	type.SDMXType,
+  type.SDMXStructureType,
 	version.SDMXSchema,
+  namespaces.SDMX,
+  findNamespace,
 	readSDMX
 	
 )
@@ -26,11 +35,15 @@ export(
 exportMethods(
 	getSDMXType,
 	getType,
+  getStructureType,
 	getSDMXSchema,
 	getVersion,
 	getSDMXHeader,
+  getNamespaces,
 	as.XML
 	
 )
 
-S3method(as.data.frame, SDMXDataSet)
+S3method(as.data.frame, SDMXGenericData)
+S3method(as.data.frame, SDMXCompactData)
+S3method(as.data.frame, SDMXMessageGroup)
